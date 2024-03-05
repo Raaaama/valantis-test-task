@@ -1,112 +1,110 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import { MD5 } from "crypto-js";
+import { IProduct } from "@/interfaces/IProduct";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
+import FilterSidebar from "@/components/FilterSidebar";
+import useProductsData from "./hooks/useProductsData";
+import Products from "@/components/Products";
+import useProductFields from "./hooks/useProductFields";
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+  const page = searchParams.get("page") as string;
+
+  const [filters, setFilters] = useState({});
+  const [filtered, setFiltered] = useState(false);
+
+  const {
+    isLoading: areFieldsLoading,
+    prices,
+    brands,
+    minPrice,
+    maxPrice,
+  } = useProductFields();
+
+  const { products, isLoading } = useProductsData(
+    page,
+    filters,
+    filtered,
+    prices
+  );
+
+  const handleSubmit = (values: any) => {
+    let queryString = "";
+    Object.entries(values).forEach(([key, value]) => {
+      if (value) {
+        if (Array.isArray(value)) {
+          value.forEach((val: any) => {
+            queryString += `&${key}=${val}`;
+          });
+        } else {
+          queryString += `&${key}=${value}`;
+        }
+      }
+    });
+    router.replace(`?page=1` + queryString);
+  };
+
+  const applySearchParams = () => {
+    const brands = searchParams.getAll("brands") as string[];
+    const max = searchParams.get("maxPrice");
+    const min = searchParams.get("minPrice");
+    const productName = searchParams.get("productName");
+    console.log(max, prices[prices.length - 1]);
+
+    if (brands.length > 0 || max || min || productName) {
+      setFiltered(true);
+      let f: any = {};
+      if (brands.length > 0) f.brands = brands;
+
+      if (max || min) {
+        f.minPrice = parseInt(min);
+        f.maxPrice = parseInt(max);
+      }
+      if (productName) f.productName = productName;
+      setFilters(f);
+    }
+  };
+
+  useEffect(() => {
+    applySearchParams();
+  }, []);
+
+  useEffect(() => {
+    applySearchParams();
+  }, [searchParams]);
+
+  return (
+    <main className="flex p-24">
+      <div className="w-1/6 p-4 flex flex-col">
+        <FilterSidebar
+          isLoading={areFieldsLoading}
+          brands={brands}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          handleSubmit={handleSubmit}
         />
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className="w-5/6 p-4">
+        <Products
+          // products={
+          //   filtered
+          //     ? products.slice(filterPage - 1 * 50, filterPage * 50)
+          //     : products
+          // }
+          products={products}
+          isLoading={isLoading}
+          page={page}
+          // filterPage={filterPage}
+          // setFilterPage={setFilterPage}
+          // filtered={filtered}
+        />
       </div>
     </main>
   );
