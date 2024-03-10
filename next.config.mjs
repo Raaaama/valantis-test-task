@@ -7,6 +7,7 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  pagesDir: './src/app',
 };
 
 export default nextConfig;
