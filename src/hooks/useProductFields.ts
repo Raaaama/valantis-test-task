@@ -20,16 +20,16 @@ const useProductFields = () => {
 
   useEffect(() => {
     setIsLoading(true)
-    const getAllFields = async () => {
+    const getAllFields = async (): Promise<void> => {
       try {
         const p = await getFields("price") as number[];
-        let temp = Array.from(new Set(p)).sort((a, b) => a - b);
-        setPrices(temp);
-        setMinPrice(temp[0])
-        setMaxPrice(temp[temp.length - 1])
+        const tempPrices = Array.from(new Set(p)).sort((a, b) => a - b);
+        setPrices(tempPrices);
+        setMinPrice(tempPrices[0])
+        setMaxPrice(tempPrices[tempPrices.length - 1])
         const b = await getFields("brand") as string[];
-        temp = Array.from(new Set(b.filter((brand) => brand !== null))).sort();
-        setBrands(temp);
+        const tempBrands = Array.from(new Set(b.filter((brand) => brand !== null))).sort();
+        setBrands(tempBrands);
         setIsLoading(false)
       } catch (e) {
         console.error("Error getting fields", e);
@@ -39,7 +39,7 @@ const useProductFields = () => {
       }
     };
     getAllFields()
-  }, []);
+}, []);
 
   return {
     isLoading,

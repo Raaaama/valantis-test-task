@@ -6,10 +6,10 @@ import { MD5 } from "crypto-js";
 import { IProduct } from "@/interfaces/IProduct";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import FilterSidebar from "@/components/FilterSidebar";
-import useProductsData from "./hooks/useProductsData";
-import Products from "@/components/Products";
-import useProductFields from "./hooks/useProductFields";
+import FilterSidebar from "../components/FilterSidebar";
+import useProductsData from "../hooks/useProductsData";
+import Products from "../components/Products";
+import useProductFields from "../hooks/useProductFields";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -62,9 +62,9 @@ export default function Home() {
       let f: any = {};
       if (brands.length > 0) f.brands = brands;
 
-      if (max || min) {
-        f.minPrice = parseInt(min);
-        f.maxPrice = parseInt(max);
+      if (max !== null || min !== null) {
+        f.minPrice = min !== null ? parseInt(min) : undefined;
+        f.maxPrice = max !== null ? parseInt(max) : undefined;
       }
       if (productName) f.productName = productName;
       setFilters(f);
