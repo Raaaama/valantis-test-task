@@ -12,7 +12,7 @@ const useProductsData = (
 ) => {
   const pageSize = 50;
   const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getIds = async (offset: number, limit: number) => {
     try {
@@ -56,13 +56,11 @@ const useProductsData = (
     const fetchData = async () => {
       try {
         let commonIds = [] as string[];
-
         if (filtered) {
           let byBrands = [] as string[];
           let filteredByBrands = false;
 
           if (filters.brands?.length > 0) {
-            console.log("brands");
             byBrands = await getProductsByValues("brand", filters.brands);
             filteredByBrands = true;
             commonIds = byBrands;
@@ -76,9 +74,6 @@ const useProductsData = (
               filters.maxPrice !== prices[prices.length - 1]) &&
             prices.length > 0
           ) {
-            console.log("prices");
-            console.log(filters.minPrice, prices[0]);
-            console.log(filters.maxPrice, prices[prices.length - 1]);
             let p = [];
             for (let i = 0; i < prices.length; i++) {
               if (prices[i] > filters.maxPrice) break;
@@ -98,7 +93,6 @@ const useProductsData = (
 
           let byName = [] as string[];
           if (filters.productName) {
-            console.log("productName");
             byName = await getProductsByValues("product", [
               filters.productName,
             ]);
@@ -121,8 +115,8 @@ const useProductsData = (
               index === self.findIndex((p: IProduct) => p.id === item.id)
           );
           setProducts(unique);
-        } else {
-          const offset = (page ? parseInt(page as string) : 1) * pageSize;
+        } else if (filtered === false) {
+          const offset = (parseInt(page as string) - 1) * pageSize;
           const ids = await getIds(offset, pageSize);
           const items = await getItemsByIds(ids);
           const unique = items.filter(

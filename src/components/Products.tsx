@@ -1,5 +1,6 @@
 import { IProduct } from "@/interfaces/IProduct";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface ProductsProps {
   products: IProduct[];
@@ -9,6 +10,15 @@ interface ProductsProps {
 
 const Products: React.FC<ProductsProps> = (props) => {
   const { products, isLoading, page } = props;
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handlePageChange = (newPage: any) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage);
+    router.push("?" + params.toString());
+  };
 
   return (
     <>
@@ -28,22 +38,20 @@ const Products: React.FC<ProductsProps> = (props) => {
       </div>
       <div className="flex items-center justify-center p-4">
         {+page > 1 && (
-          <Link
-            href={`/?page=${+page - 1}`}
-            passHref
+          <button
+            onClick={() => handlePageChange(+page - 1)}
             className="bg-grey-500 text-white py-2 px-4"
           >
             {+page - 1}
-          </Link>
+          </button>
         )}
         <span className="bg-gray-200 text-black py-2 px-4">{page}</span>
-        <Link
-          href={`/?page=${+page + 1}`}
-          passHref
+        <button
+          onClick={() => handlePageChange(+page + 1)}
           className="bg-grey-500 text-white py-2 px-4"
         >
           {+page + 1}
-        </Link>
+        </button>
       </div>
     </>
   );

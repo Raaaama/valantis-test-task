@@ -18,7 +18,7 @@ export default function Home() {
   const page = searchParams.get("page") as string;
 
   const [filters, setFilters] = useState({});
-  const [filtered, setFiltered] = useState(false);
+  const [filtered, setFiltered] = useState<any>(null);
 
   const {
     isLoading: areFieldsLoading,
@@ -56,7 +56,6 @@ export default function Home() {
     const max = searchParams.get("maxPrice");
     const min = searchParams.get("minPrice");
     const productName = searchParams.get("productName");
-    console.log(max, prices[prices.length - 1]);
 
     if (brands.length > 0 || max || min || productName) {
       setFiltered(true);
@@ -69,11 +68,14 @@ export default function Home() {
       }
       if (productName) f.productName = productName;
       setFilters(f);
+    } else {
+      setFiltered(false);
     }
   };
 
   useEffect(() => {
     applySearchParams();
+    if (page === null) router.replace(`?page=1`);
   }, []);
 
   useEffect(() => {
@@ -93,17 +95,13 @@ export default function Home() {
       </div>
       <div className="w-5/6 p-4">
         <Products
-          // products={
-          //   filtered
-          //     ? products.slice(filterPage - 1 * 50, filterPage * 50)
-          //     : products
-          // }
-          products={products}
+          products={
+            filtered
+              ? products.slice((parseInt(page) - 1) * 50, parseInt(page) * 50)
+              : products
+          }
           isLoading={isLoading}
           page={page}
-          // filterPage={filterPage}
-          // setFilterPage={setFilterPage}
-          // filtered={filtered}
         />
       </div>
     </main>
