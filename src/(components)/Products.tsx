@@ -1,4 +1,4 @@
-import { IProduct } from "../interfaces/IProduct";
+import { IProduct } from "../(interfaces)/IProduct";
 import { useSearchParams, useRouter } from "next/navigation";
 
 interface ProductsProps {

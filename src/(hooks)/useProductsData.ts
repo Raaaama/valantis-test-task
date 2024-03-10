@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { IProduct } from "../interfaces/IProduct";
+import { IProduct } from "../(interfaces)/IProduct";
 import axios from "axios";
-import { request } from "../utils/api";
-import { getItemsByIds } from "../utils/api";
+import { request } from "../(utils)/api";
+import { getItemsByIds } from "../(utils)/api";
 
 const useProductsData = (
   page: string,

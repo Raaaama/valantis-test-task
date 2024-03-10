@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { request } from "../utils/api"
+import { request } from "../(utils)/api"
 
 const useProductFields = () => {
   const [isLoading, setIsLoading] = useState(false)

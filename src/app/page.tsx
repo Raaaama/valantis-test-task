@@ -3,9 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import FilterSidebar from "../(components)/FilterSidebar";
-import useProductsData from "../hooks/useProductsData";
+import useProductsData from "../(hooks)/useProductsData";
 import Products from "../(components)/Products";
-import useProductFields from "../hooks/useProductFields";
+import useProductFields from "../(hooks)/useProductFields";
 
 export default function Home() {
   const searchParams = useSearchParams();
