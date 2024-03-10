@@ -1,14 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
-import { MD5 } from "crypto-js";
-import { IProduct } from "@/interfaces/IProduct";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
-import FilterSidebar from "../components/FilterSidebar";
+import FilterSidebar from "../(components)/FilterSidebar";
 import useProductsData from "../hooks/useProductsData";
-import Products from "../components/Products";
+import Products from "../(components)/Products";
 import useProductFields from "../hooks/useProductFields";
 
 export default function Home() {
