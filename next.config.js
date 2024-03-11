@@ -3,6 +3,7 @@
  */
 
 const nextConfig = {
+  output: 'export',
   experimental: {
     missingSuspenseWithCSRBailout: false,
   },
